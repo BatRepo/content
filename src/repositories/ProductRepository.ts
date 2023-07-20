@@ -5,14 +5,28 @@ import { IProductRepository } from "./interfaces/IProductRepository";
 export class ProductRepository implements IProductRepository {
   private product = modelProduct;
 
-    async create(prod: Product): Promise<void> {
+    async create(prod: Product): Promise<Product | undefined> {
       try {
           const document = await this.product.create(prod);
-          return document.toObject();
+          const { _id, ...rest } = document.toObject();
+          return new Product(rest, _id);
       } catch (err) {
         console.log('erro user bd', err);
       }
     }
+  
+    async update(productId: string, updateData: Partial<Product>): Promise<Product | undefined> {
+      try {
+          const document = await this.product.findByIdAndUpdate(productId, updateData, { new: true });
+          if (!document) {
+              throw new Error('Product not found');
+          }
+          const { _id, ...rest } = document.toObject();
+          return new Product(rest, _id);
+      } catch (err) {
+          console.log('erro user bd', err);
+      }
+  }
 
     // async findByEmail(mail: string): Promise<User> {
     //   try {

@@ -1,23 +1,20 @@
 import { Request, Response } from "express";
-import { ProductsUseCase } from "./saveProductsUseCase";
+import { saveProductsUseCase } from "./saveProductsUseCase";
 
-export class ProductsController {
+export class saveProductsController {
     constructor(
-        private loginUseCase: ProductsUseCase,
+        private productUseCase: saveProductsUseCase,
     ) {}
 
     async handle(request: Request, response: Response): Promise<Response> {
-        const { email, password } = request.body; 
+        const { product } = request.body; 
             try {
-                if (email && password) {
-                    const usertoken = await this.loginUseCase.execute({
-                        email,
-                        password
-                    });
-                    if (typeof usertoken != 'string' && usertoken != undefined) {                   
-                        return response.status(200).header("Authorization", "Bearer " + usertoken.token).json({ user: usertoken }).send();
+                if (product) {
+                    const produto = await this.productUseCase.execute(product);
+                    if (produto) {
+                        return response.status(200).json(produto).send();
                     }
-                    return response.status(401).end();
+                    return response.status(400).end();
                 }
                 return response.status(400).end();
             }

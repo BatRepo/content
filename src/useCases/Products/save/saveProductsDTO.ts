@@ -1,4 +1,6 @@
+import { Product } from "../../../entities/Product";
+
 export interface ProductDTO {
-    file: [];
+    product: Product;
     id: string;
 }
