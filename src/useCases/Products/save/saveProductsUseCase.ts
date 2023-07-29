@@ -1,12 +1,12 @@
 import { IProductRepository } from "../../../repositories/interfaces/IProductRepository";
-import { ProductDTO } from "./saveProductsDTO";
+import { saveProductDTO } from "./saveProductsDTO";
 
 export class saveProductsUseCase {
     constructor(
         private productRepository: IProductRepository,
     ) {}
     async execute(
-        data: ProductDTO
+        data: saveProductDTO
     ) {
             const product = await this.productRepository.findById(data.id);
             console.log('product', product);

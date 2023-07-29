@@ -1,4 +1,3 @@
-export interface ProductDTO {
-    file: [];
-    id: string;
+export interface getProductDTO {
+    productId: string;
 }

@@ -1,19 +1,19 @@
 import { IProductRepository } from "../../../repositories/interfaces/IProductRepository";
+import { updateProductDTO } from "./updateProductDTO";
 
-export class saveProductsUseCase {
+export class updateProductsUseCase {
     constructor(
         private productRepository: IProductRepository,
     ) {}
     async execute(
-        data: ProductDTO
+        data: updateProductDTO
     ) {
-            const product = await this.productRepository.findById(data.id);
+            const product = await this.productRepository.update(data.id, data.product);
             console.log('product', product);
             if (product && product != undefined) {
-                return new Error;
+                return product;
             } else {
-                const prod = await this.productRepository.create(data.product);
-                return prod
+                return new Error;
             }
     }
 }

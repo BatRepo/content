@@ -1,34 +1,27 @@
 import { IMediaRepository } from "../../../repositories/interfaces/IMediaRepository";
 import { IProductRepository } from "../../../repositories/interfaces/IProductRepository";
-import { ProductDTO } from "./getProductsDTO";
+import { getProductDTO } from "./getProductsDTO";
 
-export class ProductsUseCase {
+export class getProductUseCase {
     constructor(
         private productRepository: IProductRepository,
         private mediaRepository: IMediaRepository,
     ) {}
     async execute(
-        data: ProductDTO
+        data: getProductDTO
     ) {
-            const product = await this.productRepository.findById(data.id);
-            console.log('product', product);
-            // if (user) {
-            //     const mathPass = await PasswordEncryptor.comparePasswords(data.password, user.password);
-            //     if (mathPass) {
-            //         const userTokenAlreadExists = await this.usersTokenRepository.TokenExist(user._id);
-            //         if (userTokenAlreadExists != undefined) {
-            //             if (JWTservice.JWTVerifier(userTokenAlreadExists.token)) {
-            //                 userTokenAlreadExists.token = JWTservice.sign({ uid: userTokenAlreadExists.userId });
-            //                 await this.usersTokenRepository.updateToken(user._id, userTokenAlreadExists.token);
-            //                 return userTokenAlreadExists;
-            //             }
-            //             return userTokenAlreadExists;
-            //         }
-            //         const token = JWTservice.sign({ uid: user._id });
-            //         await this.usersTokenRepository.create(new UserToken({ userId: user._id , token }));
-            //         return new UserToken({ userId: user._id, token });
-            //     }
-            //     throw 'Password not match';
-            // }
+            const productRepo = await this.productRepository.findById(data.productId);
+            console.log('product Get', productRepo);
+            if(productRepo && productRepo != undefined) {
+                const mediaImagesRepo = await this.mediaRepository.findById(productRepo.images.assetId);
+                if (mediaImagesRepo) {
+                    const mediaSizesRepo = await this.mediaRepository.findById(productRepo.sizes_image.assetId);
+                    if (mediaSizesRepo) {
+                        return { ...productRepo, ...mediaImagesRepo, ...mediaSizesRepo };
+                    }
+                    return { ...productRepo, ...mediaImagesRepo };
+                }
+                return productRepo;
+            }
     }
 }
