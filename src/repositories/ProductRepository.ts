@@ -28,25 +28,11 @@ export class ProductRepository implements IProductRepository {
       }
   }
 
-    // async findByEmail(mail: string): Promise<User> {
-    //   try {
-    //       const document = await this.user.findOne({ email: mail }).exec();
-    //       if (!document) {
-    //         throw new Error('User not found');
-    //       }
-    //       const user = new User({ name: document?.name.valueOf(), email: document?.email.valueOf() , password: document?.password.valueOf() }, document?._id.valueOf());
-    //       return user;
-    //   } catch (err) {
-    //     console.log('Error accessing user in the database:', err);
-    //     throw err;
-    //   }
-    // }
-
     async findById(id: string): Promise<Product> {
       try {
           const document = await this.product.findOne({ id });
           if (!document) {
-            throw new Error('User not found');
+            throw new Error('Product not found');
           }
           // new Product({
           //   slug: document?.slug.valueOf(),
@@ -59,16 +45,18 @@ export class ProductRepository implements IProductRepository {
       }
     }
 
-    // async UserAlreadExists(mail: string): Promise<boolean> {
-    //   try {
-    //       const document = await this.user.findOne({email: mail});
-    //       if (!document) {
-    //         return false;
-    //       }
-    //       return true;
-    //   } catch (err) {
-    //     console.log('Error accessing user in the database:', err);
-    //     throw err;
-    //   }
-    // }
+    async findAll(): Promise<Product[]> {
+      try {
+        const documents = await this.product.find({}).lean();
+        const products: Product[] = documents.map((document: any) => {
+          const { _id, ...rest } = document.toObject();
+          return new Product(rest, _id);
+        });
+        return products;
+      } catch (err) {
+        console.log('Error accessing products in the database:', err);
+        throw new Error('Error accessing products in the database');
+      }
+    }
+
 }

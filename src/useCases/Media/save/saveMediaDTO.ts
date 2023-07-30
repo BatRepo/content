@@ -1,6 +1,5 @@
 import { Media } from "../../../entities/Media";
 
-export interface MediaDTO {
+export interface saveMediaDTO {
     media: Media;
-    id: string;
 }

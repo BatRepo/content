@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getProductUseCase } from "./getProductsUseCase";
 
-export class ProductsController {
+export class getProductController {
     constructor(
         private getuseCase: getProductUseCase,
     ) {}

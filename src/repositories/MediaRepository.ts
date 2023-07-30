@@ -14,20 +14,6 @@ export class MediaRepository implements IMediaRepository {
       }
     }
 
-    // async findByEmail(mail: string): Promise<User> {
-    //   try {
-    //       const document = await this.user.findOne({ email: mail }).exec();
-    //       if (!document) {
-    //         throw new Error('User not found');
-    //       }
-    //       const user = new User({ name: document?.name.valueOf(), email: document?.email.valueOf() , password: document?.password.valueOf() }, document?._id.valueOf());
-    //       return user;
-    //   } catch (err) {
-    //     console.log('Error accessing user in the database:', err);
-    //     throw err;
-    //   }
-    // }
-
     async findById(id: string): Promise<Media> {
       try {
           const document = await this.media.findOne({ assetId: id });
@@ -42,16 +28,30 @@ export class MediaRepository implements IMediaRepository {
       }
     }
 
-    // async UserAlreadExists(mail: string): Promise<boolean> {
-    //   try {
-    //       const document = await this.user.findOne({email: mail});
-    //       if (!document) {
-    //         return false;
-    //       }
-    //       return true;
-    //   } catch (err) {
-    //     console.log('Error accessing user in the database:', err);
-    //     throw err;
-    //   }
-    // }
+    async mediaAlreadExists(id: string): Promise<Media | undefined> {
+      try {
+          const document = await this.media.findOne({ assetId: id });
+          if (!document) {
+            return undefined;
+          }
+          const { _id, ...rest } = document.toObject();
+          return new Media(rest, _id);
+      } catch (err) {
+        console.log('Error accessing user in the database:', err);
+        throw err;
+      }
+    }
+
+    async update(assetId: string, updateData: Partial<Media>): Promise<Media | undefined> {
+      try {
+          const document = await this.media.findByIdAndUpdate(assetId, updateData, { new: true });
+          if (!document) {
+              throw new Error('Product not found');
+          }
+          const { _id, ...rest } = document.toObject();
+          return new Media(rest, _id);
+      } catch (err) {
+          console.log('erro user bd', err);
+      }
+  }
 }

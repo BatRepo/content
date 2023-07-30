@@ -1,18 +1,16 @@
 import { IMediaRepository } from "../../../repositories/interfaces/IMediaRepository";
-import { MediaDTO } from "./saveMediaDTO";
-export class MediaUseCase {
+import { saveMediaDTO } from "./saveMediaDTO";
+export class saveMediaUseCase {
     constructor(
         private mediaRepository: IMediaRepository,
     ) {}
     async execute(
-        data: MediaDTO
+        data: saveMediaDTO
     ) {
-            const media = await this.mediaRepository
-            console.log('product', product);
-            if (product && product != undefined) {
-                return  'product exist';
-            } else {
-                await this.productRepository.create(data.product);
-            }
+        try {
+            await this.mediaRepository.create(data.media);
+        } catch {
+            throw new Error;
+        }
     }
 }
