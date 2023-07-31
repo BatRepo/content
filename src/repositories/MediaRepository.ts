@@ -5,20 +5,21 @@ import { IMediaRepository } from "./interfaces/IMediaRepository";
 export class MediaRepository implements IMediaRepository {
   private media = modelMedia;
 
-    async create(m: Media): Promise<void> {
+    async create(m: Media): Promise<Media | undefined> {
       try {
           const document = await this.media.create(m);
-          return document.toObject();
+          const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file });
+          return media;
       } catch (err) {
         console.log('erro user bd', err);
       }
     }
 
-    async findById(id: string): Promise<Media> {
+    async findById(id: string): Promise<Media | undefined> {
       try {
           const document = await this.media.findOne({ assetId: id });
           if (!document) {
-            throw new Error('User not found');
+            return undefined;
           }
           const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file });
           return media;

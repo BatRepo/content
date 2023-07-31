@@ -28,11 +28,11 @@ export class ProductRepository implements IProductRepository {
       }
   }
 
-    async findById(id: string): Promise<Product> {
+    async findById(id: string): Promise<Product | undefined> {
       try {
           const document = await this.product.findOne({ id });
           if (!document) {
-            throw new Error('Product not found');
+            return undefined;
           }
           // new Product({
           //   slug: document?.slug.valueOf(),

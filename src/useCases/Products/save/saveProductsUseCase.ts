@@ -20,7 +20,7 @@ export class saveProductsUseCase {
                     if (mediaImagesRepo && mediaImagesRepo != undefined) {
                         data.product.images = mediaImagesRepo;
                         if (data.product.sizes_imageId && data.product.sizes_imageId != '') {
-                            const mediaSizesRepo = await this.mediaRepository.findById(data.product.sizes_image.assetId);
+                            const mediaSizesRepo = await this.mediaRepository.findById(data.product.sizes_imageId);
                             if (mediaSizesRepo) {
                                 data.product.sizes_image = mediaSizesRepo;
                                 const prod = await this.productRepository.create(data.product);

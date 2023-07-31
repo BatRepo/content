@@ -9,9 +9,9 @@ export class Product {
     public name!: string;
     public type_product!: string;
     public imagesId!: string;
-    public images!: Media;
+    public images?: Media;
     public sizes_imageId!: string;
-    public sizes_image!: Media;
+    public sizes_image?: Media;
 
     constructor(props: Omit<Product, 'id'>, _id?: string) {
         Object.assign(this, props);
