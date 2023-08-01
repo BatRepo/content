@@ -26,20 +26,20 @@ export class ContenfullWebhookUseCase {
         // this.productRepository.delete(productSlug);
       }
       if (modeEntry === 'Entry' && exeded == 0) {
-        if (entryId) {
-          const product = new Product(
-            {
-              slug: data?.fields.slug['en-US'], 
-              price: data?.fields.price['en-US'], 
-              visible: data?.fields.visible['en-US'],
-              description: data?.fields.description['en-US'],
-              name: data?.fields.name['en-US'],
-              type_product: data?.fields.type_product['en-US'],
-              imagesId: data?.fields.images?.['en-US'][0]?.sys?.id,
-              sizes_imageId: data?.fields.sizes_image?.['en-US'][0]?.sys?.id,
-            },
-            entryId
-          );
+        const product = new Product(
+          {
+            slug: data?.fields.slug['en-US'], 
+            price: data?.fields.price['en-US'], 
+            visible: data?.fields.visible['en-US'],
+            description: data?.fields.description['en-US'],
+            name: data?.fields.name['en-US'],
+            type_product: data?.fields.type_product['en-US'],
+            imagesId: data?.fields.images?.['en-US'][0]?.sys?.id,
+            sizes_imageId: data?.fields.sizes_image?.['en-US'][0]?.sys?.id
+          },
+          entryId
+        );
+        if (entryId && product) {
           console.log('product', product);
           const save: saveProductDTO = { id: entryId, product };
           const productSave = await this.saveProduct.execute(save);
@@ -52,11 +52,23 @@ export class ContenfullWebhookUseCase {
       }
     }
     if (modeEntry === 'Asset' && exeded == 0) {
-      exeded = 1;
-      const save = new Media(data?.fields, data?.sys?.id);
-      const mediaSave = await this.mediaRepository.create(save);
-      if (mediaSave) {
-        return 'save media';
+      const save = new Media({
+        assetId: data?.sys?.id,
+        nameAsset: data?.fields?.title['en-US'],
+        description: data?.fields?.description['en-US'],
+        file: data?.fields?.file?.['en-US']?.url
+      }, data?.sys?.id);
+      console.log('save', save);
+      if (save) {
+        exeded = 1;
+        const verifyExist = this.mediaRepository.update(save.assetId, save);
+        if (verifyExist == undefined) {
+          const mediaSave = await this.mediaRepository.create(save);
+          if (mediaSave) {
+            return 'save media';
+          }
+          return 'update media';
+        }
       }
       return undefined;
     }

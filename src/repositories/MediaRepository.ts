@@ -46,8 +46,9 @@ export class MediaRepository implements IMediaRepository {
     async update(assetId: string, updateData: Partial<Media>): Promise<Media | undefined> {
       try {
           const document = await this.media.findByIdAndUpdate(assetId, updateData, { new: true });
+          console.log('document', document);
           if (!document) {
-              throw new Error('Product not found');
+              return undefined;
           }
           const { _id, ...rest } = document.toObject();
           return new Media(rest, _id);

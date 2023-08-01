@@ -14,9 +14,9 @@ export class getProductUseCase {
             const productRepo = await this.productRepository.findById(data.productId);
             console.log('product Get', productRepo);
             if(productRepo && productRepo != undefined) {
-                const mediaImagesRepo = await this.mediaRepository.findById(productRepo.images.assetId);
+                const mediaImagesRepo = await this.mediaRepository.findById(productRepo.imagesId);
                 if (mediaImagesRepo) {
-                    const mediaSizesRepo = await this.mediaRepository.findById(productRepo.sizes_image.assetId);
+                    const mediaSizesRepo = await this.mediaRepository.findById(productRepo.sizes_imageId);
                     const productwithmedia = new ProductWithMedia({ product: productRepo, media: [ mediaImagesRepo ] });
                     if (mediaSizesRepo) {
                         const productwithmedia = new ProductWithMedia({ product: productRepo, media: [ mediaImagesRepo, mediaSizesRepo ] });
