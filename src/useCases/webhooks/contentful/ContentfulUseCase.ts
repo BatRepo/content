@@ -26,6 +26,15 @@ export class ContenfullWebhookUseCase {
         // this.productRepository.delete(productSlug);
       }
       if (modeEntry === 'Entry' && exeded == 0) {
+        console.log('data?.fields', 
+        {
+            slug: data?.fields.slug['en-US'], 
+            price: data?.fields.price['en-US'], 
+            visible: data?.fields.visible['en-US'],
+            description: data?.fields.description['en-US'],
+            name: data?.fields.name['en-US'],
+            type_product: data?.fields.type_product['en-US'],
+        });
         const product = new Product(
           {
             slug: data?.fields.slug['en-US'], 
@@ -39,6 +48,7 @@ export class ContenfullWebhookUseCase {
           },
           entryId
         );
+        console.log('product', product);
         if (entryId && product) {
           console.log('product', product);
           const save: saveProductDTO = { id: entryId, product };
@@ -56,13 +66,13 @@ export class ContenfullWebhookUseCase {
         assetId: data?.sys?.id,
         nameAsset: data?.fields?.title['en-US'],
         description: data?.fields?.description['en-US'],
-        file: data?.fields?.file?.['en-US']?.url
+        file: data?.fields?.file?.['en-US']?.url,
+        contentType: data?.fields?.file?.['en-US']?.contentType
       }, data?.sys?.id);
-      console.log('save', save);
       if (save) {
         exeded = 1;
-        const verifyExist = this.mediaRepository.update(save.assetId, save);
-        if (verifyExist == undefined) {
+        const verifyExist = await this.mediaRepository.update(save.assetId, save);
+        if (verifyExist == undefined || verifyExist != true) {
           const mediaSave = await this.mediaRepository.create(save);
           if (mediaSave) {
             return 'save media';

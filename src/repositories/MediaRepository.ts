@@ -8,7 +8,7 @@ export class MediaRepository implements IMediaRepository {
     async create(m: Media): Promise<Media | undefined> {
       try {
           const document = await this.media.create(m);
-          const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file });
+          const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file, contentType:document?.contentType });
           return media;
       } catch (err) {
         console.log('erro user bd', err);
@@ -21,7 +21,7 @@ export class MediaRepository implements IMediaRepository {
           if (!document) {
             return undefined;
           }
-          const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file });
+          const media = new Media({ assetId: document?.assetId.valueOf() , nameAsset: document?.nameAsset.valueOf(), description: document?.description.valueOf(), file: document?.file, contentType:document?.contentType });
           return media;
       } catch (err) {
         console.log('Error accessing user in the database:', err);
@@ -43,17 +43,17 @@ export class MediaRepository implements IMediaRepository {
       }
     }
 
-    async update(assetId: string, updateData: Partial<Media>): Promise<Media | undefined> {
+    async update(assetId: string, updateData: Partial<Media>): Promise<boolean | undefined> {
       try {
-          const document = await this.media.findByIdAndUpdate(assetId, updateData, { new: true });
-          console.log('document', document);
-          if (!document) {
-              return undefined;
-          }
-          const { _id, ...rest } = document.toObject();
-          return new Media(rest, _id);
+          const document = await this.media.updateOne({ assetId: assetId }, updateData);
+          if (document.modifiedCount > 0) {
+            return true;
+        } else {
+            return false;
+        }
       } catch (err) {
           console.log('erro user bd', err);
+          return undefined;
       }
   }
 }

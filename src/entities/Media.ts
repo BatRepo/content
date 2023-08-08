@@ -4,6 +4,7 @@ export class Media {
     public nameAsset!: string;
     public description!: string;
     public file!: string;
+    public contentType!: string;
 
     constructor(props: Omit<Media, 'id'>, _id?: string) {
         Object.assign(this, props);

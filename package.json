@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
+    "@types/serialport": "^8.0.2",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.43.0",

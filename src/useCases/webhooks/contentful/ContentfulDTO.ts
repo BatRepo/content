@@ -14,5 +14,5 @@ export interface payloadSys {
     updatedBy: any,
     revision: number,
     createdAt: string,
-    updatedAt: string
+    updatedAt: string,
 }
