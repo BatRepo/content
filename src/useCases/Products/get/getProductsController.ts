@@ -10,9 +10,9 @@ export class getProductController {
         const { productId } = request.body; 
             try {
                 if (productId) {
-                    const product = this.getuseCase.execute(productId);
+                    const product = await this.getuseCase.execute({ productId });
                     if (product && product != undefined) {                   
-                        return response.status(200).json(product).send();
+                        return response.status(200).json({ product }).send();
                     }
                     return response.status(400).end();
                 }

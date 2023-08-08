@@ -1,15 +1,15 @@
 import { IProductRepository } from "../../../repositories/interfaces/IProductRepository";
-import { updateProductDTO } from "./updateProductDTO";
+import { deleteProductDTO } from "./deleteProductDTO";
 
-export class updateProductsUseCase {
+export class deleteProductsUseCase {
     constructor(
         private productRepository: IProductRepository,
     ) {}
     async execute(
-        data: updateProductDTO
+        data: deleteProductDTO
     ) {
         if (data) {
-            const product = await this.productRepository.update(data.id, data.product);
+            const product = await this.productRepository.deleteEntry(data.ProductId);
             if (product && product != undefined) {
                 return true;
             } else {

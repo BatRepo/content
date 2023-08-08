@@ -45,12 +45,16 @@ export class MediaRepository implements IMediaRepository {
 
     async update(assetId: string, updateData: Partial<Media>): Promise<boolean | undefined> {
       try {
-          const document = await this.media.updateOne({ assetId: assetId }, updateData);
-          if (document.modifiedCount > 0) {
-            return true;
-        } else {
-            return false;
-        }
+          const existingDocument = await this.media.findOne({ assetId: assetId });
+          if (existingDocument) {
+            const document = await this.media.updateOne({ assetId: assetId }, updateData);
+            if (document.modifiedCount > 0) {
+              return true;
+            } else {
+                return false;
+            }
+          }
+          return false;
       } catch (err) {
           console.log('erro user bd', err);
           return undefined;

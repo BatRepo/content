@@ -14,7 +14,6 @@ export class Product {
     public sizes_image?: Media;
 
     constructor(props: Omit<Product, 'id'>, _id?: string) {
-        console.log('props', props);
         Object.assign(this, props);
 
         if (_id && _id != undefined) {

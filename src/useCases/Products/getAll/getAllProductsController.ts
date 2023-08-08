@@ -8,9 +8,9 @@ export class getallProductsController {
 
     async handle(response: Response): Promise<Response> {
             try {
-                    const products = this.getallusecase.execute();
-                    if (products && products != undefined) {                   
-                        return response.status(200).json(products).send();
+                    const products = await this.getallusecase.execute();
+                    if (products && products != undefined) {                 
+                        return response.status(200).json({ products }).send();
                     }
                     return response.status(400).end();
                 } catch {

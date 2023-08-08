@@ -10,8 +10,8 @@ export class webhookContentController {
             try {
                 if (request.body) {
                     const statusUseCase = await this.webhookcontenfull.execute(request.body);
-                    if (statusUseCase) {
-                    return response.status(200).json(statusUseCase).send();
+                    if (statusUseCase && statusUseCase != undefined) {
+                        return response.status(200).json(statusUseCase).send();
                 }
                 return response.status(400).end();
             }

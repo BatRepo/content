@@ -1,14 +1,18 @@
-import { Media } from "../../../entities/Media";
-import { Product } from "../../../entities/Product";
 import { IMediaRepository } from "../../../repositories/interfaces/IMediaRepository";
+import castMedia from "../../../utils/castMedia";
+import castProduct from "../../../utils/castProduct";
+import { deleteProductsUseCase } from "../../Products/delete/deleteProductUseCase";
 import { saveProductDTO } from "../../Products/save/saveProductsDTO";
 import { saveProductsUseCase } from "../../Products/save/saveProductsUseCase";
+import { updateProductsUseCase } from "../../Products/update/updateProductUseCase";
 import { webhookContentDTO } from "./ContentfulDTO";
 
 export class ContenfullWebhookUseCase {
     constructor(
         private saveProduct: saveProductsUseCase,
         private mediaRepository: IMediaRepository,
+        private updateproduct: updateProductsUseCase,
+        private deleteproduct: deleteProductsUseCase
     ) {}
     async execute(
         data: webhookContentDTO
@@ -17,70 +21,55 @@ export class ContenfullWebhookUseCase {
     const modeEntry = data?.sys?.type;
     let exeded = 0;
     const entry = data?.sys?.contentType?.sys?.id;
+    const revision = data?.sys?.revision;
     
     if (entry === 'products') {
       if (modeEntry === 'DeletedEntry') {
-        // Se o modo for delete -> cair no caso de uso de delete product
-        // const productSlug = data.payload.fields?.slug;
-        // console.log('productSlug', productSlug);
-        // this.productRepository.delete(productSlug);
-      }
-      if (modeEntry === 'Entry' && exeded == 0) {
-        console.log('data?.fields', 
-        {
-            slug: data?.fields.slug['en-US'], 
-            price: data?.fields.price['en-US'], 
-            visible: data?.fields.visible['en-US'],
-            description: data?.fields.description['en-US'],
-            name: data?.fields.name['en-US'],
-            type_product: data?.fields.type_product['en-US'],
-        });
-        const product = new Product(
-          {
-            slug: data?.fields.slug['en-US'], 
-            price: data?.fields.price['en-US'], 
-            visible: data?.fields.visible['en-US'],
-            description: data?.fields.description['en-US'],
-            name: data?.fields.name['en-US'],
-            type_product: data?.fields.type_product['en-US'],
-            imagesId: data?.fields.images?.['en-US'][0]?.sys?.id,
-            sizes_imageId: data?.fields.sizes_image?.['en-US'][0]?.sys?.id
-          },
-          entryId
-        );
-        console.log('product', product);
-        if (entryId && product) {
-          console.log('product', product);
-          const save: saveProductDTO = { id: entryId, product };
-          const productSave = await this.saveProduct.execute(save);
-          exeded = 1;
-          if (productSave) {
-            return 'save product';
+        if (entryId) {
+          const deleteEntry = await this.deleteproduct.execute({ ProductId: entryId});
+          if (deleteEntry) {
+            return 'delete product';
           }
           return undefined;
         }
       }
+      if (modeEntry === 'Entry' && exeded == 0) {
+        if (revision) {
+          const product = castProduct(data, entryId);
+          if (entryId && product) {
+            const verifyExist = await this.updateproduct.execute({id: product.id, product });
+            if (!verifyExist) {
+              const save: saveProductDTO = { id: entryId, product };
+              const productSave = await this.saveProduct.execute(save);
+              exeded = 1;
+              if (productSave) {
+                return 'save product';
+              }
+            }
+            exeded = 1;
+            return 'update product';
+          }
+        }
+
+      }
     }
     if (modeEntry === 'Asset' && exeded == 0) {
-      const save = new Media({
-        assetId: data?.sys?.id,
-        nameAsset: data?.fields?.title['en-US'],
-        description: data?.fields?.description['en-US'],
-        file: data?.fields?.file?.['en-US']?.url,
-        contentType: data?.fields?.file?.['en-US']?.contentType
-      }, data?.sys?.id);
-      if (save) {
-        exeded = 1;
-        const verifyExist = await this.mediaRepository.update(save.assetId, save);
-        if (verifyExist == undefined || verifyExist != true) {
-          const mediaSave = await this.mediaRepository.create(save);
-          if (mediaSave) {
-            return 'save media';
+      console.log('mediaRevision', revision);
+      if (revision) {
+        const save = castMedia(data);
+        if (save && save != undefined) {
+          exeded = 1;
+          const verifyExist = await this.mediaRepository.update(save.assetId, save);
+          if (verifyExist === undefined || verifyExist != true) {
+            const mediaSave = await this.mediaRepository.create(save);
+            if (mediaSave) {
+              return 'save media';
+            }
           }
           return 'update media';
         }
+        return undefined;
       }
-      return undefined;
     }
     }
 }

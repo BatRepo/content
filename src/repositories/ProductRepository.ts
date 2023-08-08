@@ -15,30 +15,32 @@ export class ProductRepository implements IProductRepository {
       }
     }
   
-    async update(productId: string, updateData: Partial<Product>): Promise<Product | undefined> {
+    async update(productId: string, updateData: Partial<Product>): Promise<boolean | undefined> {
       try {
-          const document = await this.product.findByIdAndUpdate(productId, updateData, { new: true });
-          if (!document) {
-              throw new Error('Product not found');
+          const existingDocument = await this.product.findOne({ id: productId });
+          if (existingDocument) {
+            const document = await this.product.updateOne({ id: productId }, updateData);
+            if (document.modifiedCount > 0) {
+              return true;
+            } else {
+                return false;
+            }
           }
-          const { _id, ...rest } = document.toObject();
-          return new Product(rest, _id);
+          return false;
       } catch (err) {
           console.log('erro user bd', err);
+          return undefined;
       }
   }
 
-    async findById(id: string): Promise<Product | undefined> {
+    async findById(identify: string): Promise<Product | undefined> {
       try {
-          const document = await this.product.findOne({ id });
+          const document = await this.product.findOne({ id: identify }).lean();
           if (!document) {
             return undefined;
           }
-          // new Product({
-          //   slug: document?.slug.valueOf(),
-          //   price: document?.price.valueOf(),
-          // });
-          return document;
+          const { _id, ...rest } = document;
+          return new Product(rest, _id);
       } catch (err) {
         console.log('Error accessing user in the database:', err);
         throw err;
@@ -49,8 +51,8 @@ export class ProductRepository implements IProductRepository {
       try {
         const documents = await this.product.find({}).lean();
         const products: Product[] = documents.map((document: any) => {
-          const { _id, ...rest } = document.toObject();
-          return new Product(rest, _id);
+          const { id, ...rest } = document;
+          return new Product(rest, id);
         });
         return products;
       } catch (err) {
@@ -58,5 +60,30 @@ export class ProductRepository implements IProductRepository {
         throw new Error('Error accessing products in the database');
       }
     }
+
+    async deleteEntry(id: string): Promise<boolean | undefined> {
+      try {
+          if (!id) {
+              throw new Error('Invalid id'); // Throw an error if id is not provided
+          }
+  
+          const existingEntry = await this.product.findOne({ id: id });
+  
+          if (existingEntry) {
+              const deletionResult = await this.product.deleteOne({ id: id });
+  
+              if (deletionResult.deletedCount && deletionResult.deletedCount > 0) {
+                  return true; // Entry deleted successfully
+              } else {
+                  return false; // Deletion was not successful
+              }
+          } else {
+              return false; // Entry with the provided id doesn't exist
+          }
+      } catch (err) {
+          console.log('error deleting entry', err);
+          return undefined;
+      }
+  }
 
 }

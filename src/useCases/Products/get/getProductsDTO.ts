@@ -1,3 +1,3 @@
 export interface getProductDTO {
-    productId: string;
+    productId: string,
 }
