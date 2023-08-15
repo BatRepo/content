@@ -10,7 +10,7 @@ export class getallProductsController {
             try {
                     const products = await this.getallusecase.execute();
                     if (products && products != undefined) {                 
-                        return response.status(200).json({ products }).send();
+                        return response.status(200).json({ products });
                     }
                     return response.status(400).end();
                 } catch {

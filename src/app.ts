@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import connectDB from './providers/mongoBD/connection';
 
 const app = express();
+app.use(Cors);
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -14,7 +15,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 connectDB();
-app.use(Cors);
 app.use(router);
 
 export { app };

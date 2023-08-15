@@ -11,7 +11,7 @@ export class webhookContentController {
                 if (request.body) {
                     const statusUseCase = await this.webhookcontenfull.execute(request.body);
                     if (statusUseCase && statusUseCase != undefined) {
-                        return response.status(200).json(statusUseCase).send();
+                        return response.status(200).json(statusUseCase);
                 }
                 return response.status(400).end();
             }

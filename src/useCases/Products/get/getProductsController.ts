@@ -12,7 +12,7 @@ export class getProductController {
                 if (productId) {
                     const product = await this.getuseCase.execute({ productId });
                     if (product && product != undefined) {                   
-                        return response.status(200).json({ product }).send();
+                        return response.status(200).json({ product });
                     }
                     return response.status(400).end();
                 }
